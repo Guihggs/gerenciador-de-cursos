@@ -1,7 +1,7 @@
-<?php  include __DIR__ . '/../inicio-html.php'; ?>
+<?php include __DIR__ . '/../inicio-html.php'; ?>
 
-    <a href="novo-curso" class="btn btn-primary mb-2">
-        Novo Curso
+    <a href="/novo-curso" class="btn btn-primary mb-2">
+        Novo curso
     </a>
 
     <ul class="list-group">
@@ -13,7 +13,7 @@
                     <a href="/alterar-curso?id=<?= $curso->getId(); ?>" class="btn btn-info btn-sm">
                         Alterar
                     </a>
-                     <a href="/excluir-curso?id=<?= $curso->getId(); ?>" class="btn btn-danger btn-sm">
+                    <a href="/excluir-curso?id=<?= $curso->getId(); ?>" class="btn btn-danger btn-sm">
                         Excluir
                     </a>
                 </span>

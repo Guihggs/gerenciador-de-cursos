@@ -1,54 +1,51 @@
 <?php
 
-namespace Alura\Cursos\Controller;
+require __DIR__ . '/../vendor/autoload.php';
 
-use Alura\Cursos\Entity\Usuario;
-use Alura\Cursos\Infra\EntityManagerCreator;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7Server\ServerRequestCreator;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class RealizarLogin implements InterfaceControladorRequisicao
-{
-    /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
-     */
-    private $repositorioDeUsuarios;
+$caminho = $_SERVER['PATH_INFO'];
+$rotas = require __DIR__ . '/../config/routes.php';
 
-    public function __construct()
-    {
-        $entityManager = (new EntityManagerCreator())->getEntityManager();
-        $this->repositorioDeUsuarios = $entityManager
-            ->getRepository(Usuario::class);
-    }
+if (!array_key_exists($caminho, $rotas)) {
+    http_response_code(404);
+    exit();
+}
 
-    public function processaRequisicao(): void
-    {
-        $email = filter_input(
-            INPUT_POST,
-            'email',
-            FILTER_VALIDATE_EMAIL
-        );
+session_start();
 
-        if (is_null($email) || $email === false) {
-            echo "O e-mail digitado não é um e-mail válido.";
-            return;
-        }
+$ehRotaDeLogin = stripos($caminho, 'login');
+if (!isset($_SESSION['logado']) && $ehRotaDeLogin === false) {
+    header('Location: /login');
+    exit();
+}
 
-        $senha = filter_input(
-            INPUT_POST,
-            'senha',
-            FILTER_UNSAFE_RAW
-        );
+$psr17Factory = new Psr17Factory();
 
-        /** @var Usuario $usuario */
-        $usuario = $this->repositorioDeUsuarios
-            ->findOneBy(['email' => $email]);
+$creator = new ServerRequestCreator(
+    $psr17Factory, // ServerRequestFactory
+    $psr17Factory, // UriFactory
+    $psr17Factory, // UploadedFileFactory
+    $psr17Factory  // StreamFactory
+);
 
-        if (is_null($usuario) || !$usuario->senhaEstaCorreta($senha)) {
-            echo "E-mail ou senha inválidos";
-            return;
-        }
-        
-        $_SESSION['logado'] = true;
+$serverRequest = $creator->fromGlobals();
 
-        header('Location: /listar-cursos');
+$classeControladora = $rotas[$caminho];
+/** @var ContainerInterface $container */
+$container = require __DIR__ . '/../config/dependencies.php';
+/** @var RequestHandlerInterface $controlador */
+$controlador = $container->get($classeControladora);
+
+$resposta = $controlador->handle($serverRequest);
+
+foreach ($resposta->getHeaders() as $name => $values) {
+    foreach ($values as $value) {
+        header(sprintf('%s: %s', $name, $value), false);
     }
 }
+
+echo $resposta->getBody();
