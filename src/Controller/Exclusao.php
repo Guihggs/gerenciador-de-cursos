@@ -13,12 +13,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 class Exclusao implements RequestHandlerInterface
 {
     use FlashMessageTrait;
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterfaces
-     */
 
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
     private $entityManager;
-    
+
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
@@ -39,13 +39,12 @@ class Exclusao implements RequestHandlerInterface
 
         $curso = $this->entityManager->getReference(
             Curso::class,
-             $id
-            );
+            $id
+        );
         $this->entityManager->remove($curso);
         $this->entityManager->flush();
         $this->defineMensagem('success', 'Curso excluído com sucesso');
 
         return $resposta;
-
     }
 }

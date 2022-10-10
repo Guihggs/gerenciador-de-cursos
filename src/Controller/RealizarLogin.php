@@ -1,51 +1,65 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+namespace Alura\Cursos\Controller;
 
-use Nyholm\Psr7\Factory\Psr17Factory;
-use Nyholm\Psr7Server\ServerRequestCreator;
-use Psr\Container\ContainerInterface;
+use Alura\Cursos\Entity\Usuario;
+use Alura\Cursos\Helper\FlashMessageTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-$caminho = $_SERVER['PATH_INFO'];
-$rotas = require __DIR__ . '/../config/routes.php';
+class RealizarLogin implements RequestHandlerInterface
+{
+    use FlashMessageTrait;
 
-if (!array_key_exists($caminho, $rotas)) {
-    http_response_code(404);
-    exit();
-}
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectRepository
+     */
+    private $repositorioDeUsuarios;
 
-session_start();
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->repositorioDeUsuarios = $entityManager
+            ->getRepository(Usuario::class);
+    }
 
-$ehRotaDeLogin = stripos($caminho, 'login');
-if (!isset($_SESSION['logado']) && $ehRotaDeLogin === false) {
-    header('Location: /login');
-    exit();
-}
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $email = filter_var(
+            $request->getParsedBody()['email'],
+            FILTER_VALIDATE_EMAIL
+        );
 
-$psr17Factory = new Psr17Factory();
+        $redirecionamentoLogin = new Response(302, ['Location' => '/login']);
+        if (is_null($email) || $email === false) {
+            $this->defineMensagem(
+                'danger',
+                'O e-mail digitado não é um e-mail válido.'
+            );
 
-$creator = new ServerRequestCreator(
-    $psr17Factory, // ServerRequestFactory
-    $psr17Factory, // UriFactory
-    $psr17Factory, // UploadedFileFactory
-    $psr17Factory  // StreamFactory
-);
+            return $redirecionamentoLogin;
+        }
 
-$serverRequest = $creator->fromGlobals();
+        $senha = filter_input(
+            INPUT_POST,
+            'senha',
+            FILTER_UNSAFE_RAW
+        );
 
-$classeControladora = $rotas[$caminho];
-/** @var ContainerInterface $container */
-$container = require __DIR__ . '/../config/dependencies.php';
-/** @var RequestHandlerInterface $controlador */
-$controlador = $container->get($classeControladora);
+        /** @var Usuario $usuario */
+        $usuario = $this->repositorioDeUsuarios
+            ->findOneBy(['email' => $email]);
 
-$resposta = $controlador->handle($serverRequest);
+        if (is_null($usuario) || !$usuario->senhaEstaCorreta($senha)) {
+            $this->defineMensagem('danger', 'E-mail ou senha inválidos');
 
-foreach ($resposta->getHeaders() as $name => $values) {
-    foreach ($values as $value) {
-        header(sprintf('%s: %s', $name, $value), false);
+            return $redirecionamentoLogin;
+        }
+
+        $_SESSION['logado'] = true;
+
+        return new Response(302, ['Location' => '/listar-cursos']);
     }
 }
-
-echo $resposta->getBody();

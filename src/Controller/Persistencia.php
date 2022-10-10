@@ -28,7 +28,7 @@ class Persistencia implements RequestHandlerInterface
     {
         $descricao = filter_var(
             $request->getParsedBody()['descricao'],
-            FILTER_SANITIZE_STRING
+            FILTER_UNSAFE_RAW
         );
 
         $curso = new Curso();

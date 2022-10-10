@@ -37,9 +37,16 @@ class ComposerStaticInit018c68373692b89d489d577fcf963086
         'P' => 
         array (
             'Psr\\Log\\' => 8,
+            'Psr\\Http\\Server\\' => 16,
+            'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
             'PhpDocReader\\' => 13,
+        ),
+        'N' => 
+        array (
+            'Nyholm\\Psr7\\' => 12,
+            'Nyholm\\Psr7Server\\' => 18,
         ),
         'L' => 
         array (
@@ -48,6 +55,10 @@ class ComposerStaticInit018c68373692b89d489d577fcf963086
         'I' => 
         array (
             'Invoker\\' => 8,
+        ),
+        'H' => 
+        array (
+            'Http\\Message\\' => 13,
         ),
         'D' => 
         array (
@@ -123,6 +134,15 @@ class ComposerStaticInit018c68373692b89d489d577fcf963086
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
+        'Psr\\Http\\Server\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-server-handler/src',
+        ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
@@ -135,6 +155,14 @@ class ComposerStaticInit018c68373692b89d489d577fcf963086
         array (
             0 => __DIR__ . '/..' . '/php-di/phpdoc-reader/src/PhpDocReader',
         ),
+        'Nyholm\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nyholm/psr7/src',
+        ),
+        'Nyholm\\Psr7Server\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nyholm/psr7-server/src',
+        ),
         'Laravel\\SerializableClosure\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/serializable-closure/src',
@@ -142,6 +170,10 @@ class ComposerStaticInit018c68373692b89d489d577fcf963086
         'Invoker\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-di/invoker/src',
+        ),
+        'Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-http/message-factory/src',
         ),
         'Doctrine\\Persistence\\' => 
         array (
