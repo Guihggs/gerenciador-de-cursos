@@ -12,6 +12,7 @@ use Alura\Cursos\Controller\{CursosEmJson,
     RealizarLogin};
 
 return [
+    '' => FormularioLogin::class,
     '/listar-cursos' => ListarCursos::class,
     '/novo-curso' => FormularioInsercao::class,
     '/salvar-curso' => Persistencia::class,

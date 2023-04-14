@@ -39,7 +39,7 @@ class Curso implements \JsonSerializable
         $this->descricao = $descricao;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
 {
         return [
             'id' => $this->id,
